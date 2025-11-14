@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const { createClient } = require("@supabase/supabase-js");
+const path = require("path");
 
 const app = express();
 app.use(bodyParser.json());
@@ -16,7 +17,6 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 app.post("/register", async (req, res) => {
     const { username, password } = req.body;
 
-    // Check existing user
     const { data: existing } = await supabase
         .from("users")
         .select("*")
@@ -27,7 +27,6 @@ app.post("/register", async (req, res) => {
 
     const hashed = await bcrypt.hash(password, 10);
 
-    // Insert new user
     const { error } = await supabase
         .from("users")
         .insert([{ username, password: hashed }]);
@@ -52,14 +51,15 @@ app.post("/login", async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.json({ message: "Wrong password!" });
 
-    res.json({ message: "Login successful!" });
-    res.redirect("/dashboard.html");
+    res.json({ message: "Login successful!", redirect: "/dashboard.html" });
 });
 
-// Redirect root to login
-app.get("/", (req, res) => res.redirect("/login"));
+// Routes
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public/login.html")));
+app.get("/login", (req, res) => res.sendFile(path.join(__dirname, "public/login.html")));
+app.get("/register", (req, res) => res.sendFile(path.join(__dirname, "public/register.html")));
 
-app.get("/login", (req, res) => res.sendFile(__dirname + "/public/login.html"));
-app.get("/register", (req, res) => res.sendFile(__dirname + "/public/register.html"));
+// Export for Vercel
+const serverless = require("@vendia/serverless-express");
+module.exports = serverless({ app });
 
-app.listen(3000, () => console.log("Server running on http://localhost:3000"));
