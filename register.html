@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <h2>Register</h2>
+    <input id="regUser" type="text" placeholder="Username">
+    <input id="regPass" type="password" placeholder="Password">
+    <button onclick="register()">Register</button>
+    <p id="msg"></p>
+    <p>Already have account? <a href="/login">Login</a></p>
+</div>
+
+<script>
+async function register() {
+    const res = await fetch("/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            username: document.getElementById("regUser").value,
+            password: document.getElementById("regPass").value
+        })
+    });
+    const data = await res.json();
+    document.getElementById("msg").innerText = data.message;
+}
+</script>
+</body>
+</html>
