@@ -63,3 +63,4 @@ app.get("/register", (req, res) => res.sendFile(path.join(__dirname, "public/reg
 const serverless = require("@vendia/serverless-express");
 module.exports = serverless({ app });
 
+
