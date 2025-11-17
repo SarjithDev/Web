@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <h2>Login</h2>
+    <input id="logUser" type="text" placeholder="Username">
+    <input id="logPass" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <p id="msg"></p>
+    <p>Don't have account? <a href="/register">Register</a></p>
+</div>
+
+<script>
+async function login() {
+    const res = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            username: document.getElementById("logUser").value,
+            password: document.getElementById("logPass").value
+        })
+    });
+    const data = await res.json();
+    document.getElementById("msg").innerText = data.message;
+}
+</script>
+</body>
+</html>
